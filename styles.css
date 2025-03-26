@@ -286,34 +286,6 @@ button:disabled {
     margin-top: 20px;
 }
 
-.sample-texts {
-    margin: 15px 0;
-    background-color: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
-}
-
-.sample-buttons {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.sample-buttons button {
-    background-color: #e9ecef;
-    color: var(--dark-color);
-    padding: 10px;
-    font-size: 0.9rem;
-    transition: all 0.2s;
-}
-
-.sample-buttons button:hover {
-    background-color: var(--accent-color);
-    color: white;
-}
-
 .hidden {
     display: none;
 }
@@ -359,10 +331,6 @@ button:disabled {
     .result-metrics {
         grid-template-columns: 1fr 1fr;
     }
-    
-    .sample-buttons {
-        grid-template-columns: 1fr;
-    }
 }
 
 @media (max-width: 480px) {
@@ -376,10 +344,5 @@ button:disabled {
     
     .result-metrics {
         grid-template-columns: 1fr;
-    }
-    
-    .test-header {
-        flex-direction: column;
-        align-items: flex-start;
     }
 }

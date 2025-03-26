@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const newTestBtn = document.getElementById('new-test');
     const textManagementSection = document.getElementById('text-management');
     const testSettingsSection = document.getElementById('test-settings');
-    const sampleTextBtns = document.querySelectorAll('.sample-text-btn');
     const performanceChartCtx = document.getElementById('performance-chart').getContext('2d');
 
     // Variables
@@ -35,15 +34,10 @@ document.addEventListener('DOMContentLoaded', function() {
     let performanceChart;
     let testHistory = JSON.parse(localStorage.getItem('typingTestHistory') || '[]');
 
-    // Sample Texts
-    const sampleTexts = {
-        easy: "The quick brown fox jumps over the lazy dog. This sentence contains all the letters in the English alphabet. Typing is an essential skill in today's digital world. Practice regularly to improve your speed and accuracy.",
-        medium: "The ability to type quickly and accurately is becoming increasingly important in our technology-driven society. Whether you're writing an email, coding a program, or composing a document, efficient typing skills can save you valuable time. Regular practice is key to developing muscle memory and improving your overall performance.",
-        hard: "Touch typing is the ability to type without looking at the keyboard, relying instead on muscle memory. This skill, once mastered, can significantly increase your typing speed and reduce errors. The average typing speed is around 40 words per minute, while professional typists often exceed 75 WPM. To achieve this level of proficiency, one must practice proper finger placement and maintain consistent rhythm and posture.",
-        code: "function calculateAverage(numbers) {\n  let sum = 0;\n  for (let i = 0; i < numbers.length; i++) {\n    sum += numbers[i];\n  }\n  return sum / numbers.length;\n}\n\nconst nums = [5, 10, 15, 20];\nconsole.log(calculateAverage(nums)); // Output: 12.5"
-    };
+    
 
     // Initialize
+    initializeSampleTexts();
     updateTextSummary();
     loadSavedTexts();
     if (testHistory.length > 0) {
@@ -60,37 +54,46 @@ document.addEventListener('DOMContentLoaded', function() {
     newTestBtn.addEventListener('click', resetTest);
     userInput.addEventListener('input', checkTyping);
     
-    // Sample text buttons
-    sampleTextBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const level = this.getAttribute('data-level');
-            customTextArea.value = sampleTexts[level];
-            updateTextSummary();
-        });
-    });
-    
     // Disable copy-paste and other shortcuts
     userInput.addEventListener('keydown', function(e) {
-        // Disable Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X, etc.
         if (e.ctrlKey && (e.keyCode === 65 || e.keyCode === 67 || e.keyCode === 86 || e.keyCode === 88)) {
             e.preventDefault();
             return false;
         }
-        
-        // Disable right click
         if (e.keyCode === 93) {
             e.preventDefault();
             return false;
         }
     });
     
-    // Disable context menu
     userInput.addEventListener('contextmenu', function(e) {
         e.preventDefault();
         return false;
     });
 
     // Functions
+    function initializeSampleTexts() {
+        const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
+        // const hasSamples = savedTexts.some(text => text.title.length!==0);
+        const hasSamples = savedTexts.length!==0
+        
+        if (!hasSamples) {
+            const allTexts = [...sampleTexts, ...savedTexts];
+            // Update the sampleTexts array with numbered titles
+            for (let i = 0; i < allTexts.length; i++) {
+                allTexts[i].title = `${i + 1}. ${allTexts[i].title}`;
+            }
+            localStorage.setItem('savedTexts', JSON.stringify(allTexts));
+        }
+        else{
+            // Update the sampleTexts array with numbered titles
+            for (let i = 0; i < sampleTexts.length; i++) {
+                sampleTexts[i].title = `${i + 1}. ${sampleTexts[i].title}`;
+            }
+            localStorage.setItem('savedTexts', JSON.stringify(sampleTexts));
+        }
+    }
+
     function updateTextSummary() {
         const text = customTextArea.value;
         const charCountValue = text.length;
@@ -107,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const title = prompt('Enter a name for this text:', `Text ${savedTextsList.options.length + 1}`);
+        const title = prompt('Enter a name for this text:', `Custom Text ${savedTextsList.options.length + 1}`);
         if (title === null) return;
 
         const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
@@ -147,9 +150,16 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        if (!confirm('Are you sure you want to delete this text?')) return;
-
         const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
+        const textToDelete = savedTexts[selectedIndex].title;
+        
+        if (textToDelete.includes("Sample")) {
+            alert('Sample texts cannot be deleted.');
+            return;
+        }
+
+        if (!confirm(`Are you sure you want to delete "${textToDelete}"?`)) return;
+
         savedTexts.splice(selectedIndex, 1);
         localStorage.setItem('savedTexts', JSON.stringify(savedTexts));
 
@@ -166,12 +176,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Get the text for the test
+        /*
         if (selectedIndex !== '') {
             const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
             testText = savedTexts[selectedIndex].text;
         } else {
             testText = customTextArea.value;
         }
+        */
+        testText = customTextArea.value;
 
         originalText = testText;
         testTextDiv.textContent = testText;
@@ -299,9 +312,9 @@ document.addEventListener('DOMContentLoaded', function() {
             incorrectChars
         };
         
-        testHistory.unshift(testResult); // Add to beginning of array
+        testHistory.unshift(testResult);
         if (testHistory.length > 20) {
-            testHistory.pop(); // Keep only last 20 tests
+            testHistory.pop();
         }
         
         localStorage.setItem('typingTestHistory', JSON.stringify(testHistory));
@@ -326,7 +339,7 @@ document.addEventListener('DOMContentLoaded', function() {
             performanceChart.destroy();
         }
         
-        const last20Tests = testHistory.slice(0, 20).reverse(); // Show most recent first
+        const last20Tests = testHistory.slice(0, 20).reverse();
         const labels = last20Tests.map((test, index) => `Test ${index + 1}`);
         const wpmData = last20Tests.map(test => test.wpm);
         const accuracyData = last20Tests.map(test => test.accuracy);
@@ -356,7 +369,7 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
                 scales: {
                     y: {
                         beginAtZero: true,
