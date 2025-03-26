@@ -3,14 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Typing Test</title>
+    <title>Typing Master</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <h1>Typing Test</h1>
+        <header>
+            <h1>Typing Master</h1>
+            <p class="tagline">Test and improve your typing skills</p>
+        </header>
         
-        <div class="text-management">
+        <div class="text-management" id="text-management">
             <h2>Text Management</h2>
             <textarea id="custom-text" placeholder="Enter your custom text here..."></textarea>
             <div class="text-summary">
@@ -27,34 +31,50 @@
             </div>
         </div>
         
-        <div class="test-settings">
+        <div class="test-settings" id="test-settings">
             <h2>Test Settings</h2>
-            <label for="timer">Test Duration (minutes):</label>
-            <input type="number" id="timer" min="1" max="60" value="15">
-            <button id="start-test">Start Test</button>
+            <div class="settings-container">
+                <label for="timer">Test Duration (minutes):</label>
+                <input type="number" id="timer" min="1" max="60" value="15">
+                <button id="start-test" class="primary-btn">Start Test</button>
+            </div>
         </div>
         
         <div class="typing-test hidden">
-            <h2>Typing Test</h2>
-            <div class="timer-display">Time remaining: <span id="time-display">15:00</span></div>
+            <div class="test-header">
+                <h2>Typing Test</h2>
+                <div class="timer-display">Time remaining: <span id="time-display">15:00</span></div>
+            </div>
             <div id="test-text" class="test-text"></div>
             <textarea id="user-input" placeholder="Start typing here when the test begins..." disabled></textarea>
-            <button id="submit-test" disabled>Submit</button>
+            <button id="submit-test" class="primary-btn" disabled>Submit</button>
         </div>
         
         <div class="results hidden">
             <h2>Test Results</h2>
             <div class="result-metrics">
-                <div>Speed: <span id="wpm">0</span> WPM</div>
-                <div>Accuracy: <span id="accuracy">0</span>%</div>
-                <div>Correct characters: <span id="correct-chars">0</span></div>
-                <div>Incorrect characters: <span id="incorrect-chars">0</span></div>
+                <div class="metric-card">
+                    <div class="metric-value" id="wpm">0</div>
+                    <div class="metric-label">Words Per Minute</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="accuracy">0</div>
+                    <div class="metric-label">Accuracy</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="correct-chars">0</div>
+                    <div class="metric-label">Correct Characters</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="incorrect-chars">0</div>
+                    <div class="metric-label">Incorrect Characters</div>
+                </div>
             </div>
             <div class="text-comparison">
                 <h3>Your typing with mistakes highlighted:</h3>
                 <div id="marked-text"></div>
             </div>
-            <button id="new-test">Start New Test</button>
+            <button id="new-test" class="primary-btn">Start New Test</button>
         </div>
     </div>
 

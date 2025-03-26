@@ -20,6 +20,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const incorrectCharsDisplay = document.getElementById('incorrect-chars');
     const markedTextDiv = document.getElementById('marked-text');
     const newTestBtn = document.getElementById('new-test');
+    const textManagementSection = document.getElementById('text-management');
+    const testSettingsSection = document.getElementById('test-settings');
 
     // Variables
     let timer;
@@ -42,6 +44,27 @@ document.addEventListener('DOMContentLoaded', function() {
     submitTestBtn.addEventListener('click', submitTest);
     newTestBtn.addEventListener('click', resetTest);
     userInput.addEventListener('input', checkTyping);
+    
+    // Disable copy-paste and other shortcuts
+    userInput.addEventListener('keydown', function(e) {
+        // Disable Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X, etc.
+        if (e.ctrlKey && (e.keyCode === 65 || e.keyCode === 67 || e.keyCode === 86 || e.keyCode === 88)) {
+            e.preventDefault();
+            return false;
+        }
+        
+        // Disable right click
+        if (e.keyCode === 93) {
+            e.preventDefault();
+            return false;
+        }
+    });
+    
+    // Disable context menu
+    userInput.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+    });
 
     // Functions
     function updateTextSummary() {
@@ -153,12 +176,18 @@ document.addEventListener('DOMContentLoaded', function() {
         startTime = new Date();
         testActive = true;
 
+        // Hide unnecessary sections
+        textManagementSection.classList.add('hidden');
+        testSettingsSection.classList.add('hidden');
+        
         // Show typing test section
         typingTestSection.classList.remove('hidden');
         resultsSection.classList.add('hidden');
 
         // Focus on input
-        userInput.focus();
+        setTimeout(() => {
+            userInput.focus();
+        }, 100);
     }
 
     function updateTimerDisplay() {
@@ -244,13 +273,20 @@ document.addEventListener('DOMContentLoaded', function() {
         incorrectCharsDisplay.textContent = incorrectChars;
         markedTextDiv.innerHTML = markedText;
 
-        // Show results section
+        // Show results section and hide test section
         typingTestSection.classList.add('hidden');
         resultsSection.classList.remove('hidden');
     }
 
     function resetTest() {
+        // Show the initial sections again
+        textManagementSection.classList.remove('hidden');
+        testSettingsSection.classList.remove('hidden');
+        
+        // Hide results
         resultsSection.classList.add('hidden');
+        
+        // Reset input
         userInput.value = '';
         testTextDiv.textContent = '';
     }
