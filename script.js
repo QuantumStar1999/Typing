@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const newTestBtn = document.getElementById('new-test');
     const textManagementSection = document.getElementById('text-management');
     const testSettingsSection = document.getElementById('test-settings');
+    const performanceChartCtx = document.getElementById('performance-chart').getContext('2d');
 
     // Variables
     let timer;
@@ -30,10 +31,18 @@ document.addEventListener('DOMContentLoaded', function() {
     let startTime;
     let originalText = '';
     let testText = '';
+    let performanceChart;
+    let testHistory = JSON.parse(localStorage.getItem('typingTestHistory') || '[]');
+
+    
 
     // Initialize
+    initializeSampleTexts();
     updateTextSummary();
     loadSavedTexts();
+    if (testHistory.length > 0) {
+        renderPerformanceChart();
+    }
 
     // Event Listeners
     customTextArea.addEventListener('input', updateTextSummary);
@@ -47,26 +56,44 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Disable copy-paste and other shortcuts
     userInput.addEventListener('keydown', function(e) {
-        // Disable Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X, etc.
         if (e.ctrlKey && (e.keyCode === 65 || e.keyCode === 67 || e.keyCode === 86 || e.keyCode === 88)) {
             e.preventDefault();
             return false;
         }
-        
-        // Disable right click
         if (e.keyCode === 93) {
             e.preventDefault();
             return false;
         }
     });
     
-    // Disable context menu
     userInput.addEventListener('contextmenu', function(e) {
         e.preventDefault();
         return false;
     });
 
     // Functions
+    function initializeSampleTexts() {
+        const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
+        // const hasSamples = savedTexts.some(text => text.title.length!==0);
+        const hasSamples = savedTexts.length!==0
+        
+        if (!hasSamples) {
+            const allTexts = [...sampleTexts, ...savedTexts];
+            // Update the sampleTexts array with numbered titles
+            for (let i = 0; i < allTexts.length; i++) {
+                allTexts[i].title = `${i + 1}. ${allTexts[i].title}`;
+            }
+            localStorage.setItem('savedTexts', JSON.stringify(allTexts));
+        }
+        else{
+            // Update the sampleTexts array with numbered titles
+            for (let i = 0; i < sampleTexts.length; i++) {
+                sampleTexts[i].title = `${i + 1}. ${sampleTexts[i].title}`;
+            }
+            localStorage.setItem('savedTexts', JSON.stringify(sampleTexts));
+        }
+    }
+
     function updateTextSummary() {
         const text = customTextArea.value;
         const charCountValue = text.length;
@@ -83,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const title = prompt('Enter a name for this text:', `Text ${savedTextsList.options.length + 1}`);
+        const title = prompt('Enter a name for this text:', `Custom Text ${savedTextsList.options.length + 1}`);
         if (title === null) return;
 
         const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
@@ -123,9 +150,16 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        if (!confirm('Are you sure you want to delete this text?')) return;
-
         const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
+        const textToDelete = savedTexts[selectedIndex].title;
+        
+        if (textToDelete.includes("Sample")) {
+            alert('Sample texts cannot be deleted.');
+            return;
+        }
+
+        if (!confirm(`Are you sure you want to delete "${textToDelete}"?`)) return;
+
         savedTexts.splice(selectedIndex, 1);
         localStorage.setItem('savedTexts', JSON.stringify(savedTexts));
 
@@ -142,12 +176,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Get the text for the test
+        /*
         if (selectedIndex !== '') {
             const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
             testText = savedTexts[selectedIndex].text;
         } else {
             testText = customTextArea.value;
         }
+        */
+        testText = customTextArea.value;
 
         originalText = testText;
         testTextDiv.textContent = testText;
@@ -266,6 +303,22 @@ document.addEventListener('DOMContentLoaded', function() {
         const words = userText.trim().split(/\s+/).length;
         const wpm = timeTaken > 0 ? Math.round(words / timeTaken) : 0;
 
+        // Save test results to history
+        const testResult = {
+            date: new Date().toISOString(),
+            wpm,
+            accuracy,
+            correctChars,
+            incorrectChars
+        };
+        
+        testHistory.unshift(testResult);
+        if (testHistory.length > 20) {
+            testHistory.pop();
+        }
+        
+        localStorage.setItem('typingTestHistory', JSON.stringify(testHistory));
+
         // Display results
         wpmDisplay.textContent = wpm;
         accuracyDisplay.textContent = accuracy;
@@ -273,9 +326,83 @@ document.addEventListener('DOMContentLoaded', function() {
         incorrectCharsDisplay.textContent = incorrectChars;
         markedTextDiv.innerHTML = markedText;
 
+        // Update performance chart
+        renderPerformanceChart();
+
         // Show results section and hide test section
         typingTestSection.classList.add('hidden');
         resultsSection.classList.remove('hidden');
+    }
+
+    function renderPerformanceChart() {
+        if (performanceChart) {
+            performanceChart.destroy();
+        }
+        
+        const last20Tests = testHistory.slice(0, 20).reverse();
+        const labels = last20Tests.map((test, index) => `Test ${index + 1}`);
+        const wpmData = last20Tests.map(test => test.wpm);
+        const accuracyData = last20Tests.map(test => test.accuracy);
+        
+        performanceChart = new Chart(performanceChartCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'WPM',
+                        data: wpmData,
+                        borderColor: '#4361ee',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Accuracy %',
+                        data: accuracyData,
+                        borderColor: '#4cc9f0',
+                        backgroundColor: 'rgba(76, 201, 240, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'WPM / Accuracy'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Test Attempts'
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: function(context) {
+                                const index = context.dataIndex;
+                                const test = last20Tests[index];
+                                return [
+                                    `Correct: ${test.correctChars}`,
+                                    `Incorrect: ${test.incorrectChars}`,
+                                    `Date: ${new Date(test.date).toLocaleString()}`
+                                ];
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
     function resetTest() {

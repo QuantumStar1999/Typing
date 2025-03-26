@@ -271,6 +271,21 @@ button:disabled {
     border: 2px solid #e9ecef;
 }
 
+.performance-history {
+    margin-top: 30px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e9ecef;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin-top: 20px;
+}
+
 .hidden {
     display: none;
 }

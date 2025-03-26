@@ -3,14 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Typing Master</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Typing Test Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    
+    <!-- Laptop with keyboard -->
+    <!-- <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2965/2965300.png" type="image/png"> -->
+
+    <!-- Hands typing -->
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3063/3063188.png" type="image/png">
+
+    <!-- Simple keyboard key -->
+    <!-- <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2777/2777154.png" type="image/png"> -->
+
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Typing Master</h1>
+            <h1>Typing Test Pro</h1>
             <p class="tagline">Test and improve your typing skills</p>
         </header>
         
@@ -25,6 +37,7 @@
                 <button id="save-text">Save Text</button>
                 <button id="delete-text">Delete Text</button>
             </div>
+            
             <div class="saved-texts">
                 <h3>Saved Texts</h3>
                 <select id="saved-texts-list" size="5"></select>
@@ -70,6 +83,14 @@
                     <div class="metric-label">Incorrect Characters</div>
                 </div>
             </div>
+            
+            <div class="performance-history">
+                <h3>Your Performance History</h3>
+                <div class="chart-container">
+                    <canvas id="performance-chart"></canvas>
+                </div>
+            </div>
+            
             <div class="text-comparison">
                 <h3>Your typing with mistakes highlighted:</h3>
                 <div id="marked-text"></div>
@@ -78,6 +99,7 @@
         </div>
     </div>
 
+    <script src="text.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
