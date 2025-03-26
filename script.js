@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let originalText = '';
     let testText = '';
     let performanceChart;
+    let allTexts;
     let testHistory = JSON.parse(localStorage.getItem('typingTestHistory') || '[]');
 
     
@@ -77,20 +78,15 @@ document.addEventListener('DOMContentLoaded', function() {
         // const hasSamples = savedTexts.some(text => text.title.length!==0);
         const hasSamples = savedTexts.length!==0
         
-        if (!hasSamples) {
-            const allTexts = [...sampleTexts, ...savedTexts];
-            // Update the sampleTexts array with numbered titles
-            for (let i = 0; i < allTexts.length; i++) {
-                allTexts[i].title = `${i + 1}. ${allTexts[i].title}`;
-            }
-            localStorage.setItem('savedTexts', JSON.stringify(allTexts));
+        if (hasSamples) {
+            allTexts = [...sampleTexts, ...savedTexts];
+
         }
         else{
-            // Update the sampleTexts array with numbered titles
-            for (let i = 0; i < sampleTexts.length; i++) {
-                sampleTexts[i].title = `${i + 1}. ${sampleTexts[i].title}`;
-            }
-            localStorage.setItem('savedTexts', JSON.stringify(sampleTexts));
+            allTexts = sampleTexts;
+        }
+        for (let i = 0; i < allTexts.length; i++) {
+            allTexts[i].title = `${i + 1}. ${allTexts[i].title}`;
         }
     }
 
@@ -110,11 +106,15 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const title = prompt('Enter a name for this text:', `Custom Text ${savedTextsList.options.length + 1}`);
+        const title = prompt('Enter a name for this text:', `Custom Text`);
         if (title === null) return;
 
         const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
         savedTexts.push({ title, text });
+        allTexts.push({ 
+            title: `${allTexts.length + 1}. ${title}`,
+            text
+        });
         localStorage.setItem('savedTexts', JSON.stringify(savedTexts));
 
         loadSavedTexts();
@@ -124,9 +124,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function loadSavedTexts() {
         const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
-        savedTextsList.innerHTML = '';
-        
-        savedTexts.forEach((item, index) => {
+        savedTextsList.innerHTML = '';        
+        allTexts.forEach((item, index) => {
             const option = document.createElement('option');
             option.value = index;
             option.textContent = item.title;
@@ -137,9 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function loadSelectedText() {
         const selectedIndex = savedTextsList.value;
         if (selectedIndex === '') return;
-
-        const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
-        customTextArea.value = savedTexts[selectedIndex].text;
+        customTextArea.value = allTexts[selectedIndex].text;
         updateTextSummary();
     }
 
@@ -151,16 +148,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
-        const textToDelete = savedTexts[selectedIndex].title;
-        
+        const textToDelete = allTexts[selectedIndex].title;
+        /*
         if (textToDelete.includes("Sample")) {
             alert('Sample texts cannot be deleted.');
             return;
+        }*/
+        if (selectedIndex<sampleTexts.length) {
+            alert('Sample texts cannot be deleted.');
+            return;
         }
-
         if (!confirm(`Are you sure you want to delete "${textToDelete}"?`)) return;
 
-        savedTexts.splice(selectedIndex, 1);
+        allTexts.splice(selectedIndex, 1);
+        savedTexts.splice(selectedIndex-sampleTexts.length, 1);
         localStorage.setItem('savedTexts', JSON.stringify(savedTexts));
 
         loadSavedTexts();
