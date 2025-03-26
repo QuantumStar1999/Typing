@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Test</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Typing Test</h1>
+        
+        <div class="text-management">
+            <h2>Text Management</h2>
+            <textarea id="custom-text" placeholder="Enter your custom text here..."></textarea>
+            <div class="text-summary">
+                <span id="char-count">0 characters</span>
+                <span id="word-count">0 words</span>
+            </div>
+            <div class="buttons">
+                <button id="save-text">Save Text</button>
+                <button id="delete-text">Delete Text</button>
+            </div>
+            <div class="saved-texts">
+                <h3>Saved Texts</h3>
+                <select id="saved-texts-list" size="5"></select>
+            </div>
+        </div>
+        
+        <div class="test-settings">
+            <h2>Test Settings</h2>
+            <label for="timer">Test Duration (minutes):</label>
+            <input type="number" id="timer" min="1" max="60" value="15">
+            <button id="start-test">Start Test</button>
+        </div>
+        
+        <div class="typing-test hidden">
+            <h2>Typing Test</h2>
+            <div class="timer-display">Time remaining: <span id="time-display">15:00</span></div>
+            <div id="test-text" class="test-text"></div>
+            <textarea id="user-input" placeholder="Start typing here when the test begins..." disabled></textarea>
+            <button id="submit-test" disabled>Submit</button>
+        </div>
+        
+        <div class="results hidden">
+            <h2>Test Results</h2>
+            <div class="result-metrics">
+                <div>Speed: <span id="wpm">0</span> WPM</div>
+                <div>Accuracy: <span id="accuracy">0</span>%</div>
+                <div>Correct characters: <span id="correct-chars">0</span></div>
+                <div>Incorrect characters: <span id="incorrect-chars">0</span></div>
+            </div>
+            <div class="text-comparison">
+                <h3>Your typing with mistakes highlighted:</h3>
+                <div id="marked-text"></div>
+            </div>
+            <button id="new-test">Start New Test</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
