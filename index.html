@@ -49,6 +49,9 @@
             <div class="settings-container">
                 <label for="timer">Test Duration (minutes):</label>
                 <input type="number" id="timer" min="1" max="60" value="15">
+
+                <label for="target-cph">Target key depression per Hour (CPH):</label>
+                <input type="number" id="target-cph" min="5000" max="12000" value="8000">
                 <button id="start-test" class="primary-btn">Start Test</button>
             </div>
         </div>
@@ -81,6 +84,14 @@
                 <div class="metric-card">
                     <div class="metric-value" id="incorrect-chars">0</div>
                     <div class="metric-label">Incorrect Characters</div>
+                </div>
+                <!-- CPH meter -->
+                <div class="cph-meter">
+                    <h3>Characters Per Hour</h3>
+                    <div class="cph-visualization">
+                        <div class="cph-bar" id="cph-bar"></div>
+                    </div>
+                    <div class="cph-value" id="cph-value">0 CPH</div>
                 </div>
             </div>
             
