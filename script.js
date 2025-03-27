@@ -326,6 +326,26 @@ document.addEventListener('DOMContentLoaded', function() {
         correctCharsDisplay.textContent = correctChars;
         incorrectCharsDisplay.textContent = incorrectChars;
         markedTextDiv.innerHTML = markedText;
+        // Calculate Characters Per Hour (CPH)
+        const cph = Math.round((correctChars / timeTaken) * 60);
+        const cphBar = document.getElementById('cph-bar');
+        const cphValue = document.getElementById('cph-value');
+        const targetCPH = document.getElementById('target-cph');
+        // Update display
+        cphBar.style.width = `${Math.min(100, cph / targetCPH * 100)}%`;
+        cphValue.textContent = `${cph.toLocaleString()} CPH`;
+
+        // Add "depressed" class if CPH is low (adjust threshold as needed)
+       // Inside submitTest(), after calculating CPH:
+        if (cph < targetCPH) {
+            cphBar.classList.remove('healthy');
+            cphBar.classList.add('depressed');
+            cphValue.style.color = 'var(--error-color)';
+        } else {
+            cphBar.classList.remove('depressed');
+            cphBar.classList.add('healthy');
+            cphValue.style.color = 'var(--success-color)';
+        }
 
         // Update performance chart
         renderPerformanceChart();

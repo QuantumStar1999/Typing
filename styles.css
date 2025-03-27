@@ -318,6 +318,65 @@ button:disabled {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--secondary-color);
 }
+.cph-meter {
+    margin: 30px 0;
+    text-align: center;
+}
+
+.cph-visualization {
+    width: 100%;
+    height: 40px;
+    background-color: #f0f0f0;
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 10px 0;
+    position: relative;
+}
+
+/* Replace the existing .cph-bar and .depressed styles with this: */
+.cph-bar {
+    height: 100%;
+    width: 0%;
+    transition: width 0.5s ease, background 0.5s ease;
+}
+
+/* Healthy state (8000+ CPH) - Blue gradient */
+.cph-bar.healthy {
+    background: linear-gradient(90deg, #4361ee, #4cc9f0);
+}
+
+/* Depressed state (<8000 CPH) - Red gradient */
+.cph-bar.depressed {
+    background: linear-gradient(90deg, #f72585, #ff5400);
+    animation: pulse 2s infinite;
+}
+
+.cph-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--dark-color);
+}
+#target-cph {
+    padding: 10px;
+    width: 120px; /* Slightly wider than timer input */
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 16px;
+    text-align: center;
+    margin: 0 10px;
+}
+
+/* Depression-style animation */
+@keyframes pulse {
+    0% { opacity: 0.8; }
+    50% { opacity: 0.4; }
+    100% { opacity: 0.8; }
+}
+
+.depressed .cph-bar {
+    background: linear-gradient(90deg, #6c757d, #adb5bd);
+    animation: pulse 2s infinite;
+}
 
 @media (max-width: 768px) {
     .container {
@@ -340,6 +399,12 @@ button:disabled {
     
     .settings-container {
         flex-direction: column;
+        gap: 10px;
+    }
+    
+    #timer, #target-cph {
+        width: 100%;
+        margin: 5px 0;
     }
     
     .result-metrics {
