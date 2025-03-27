@@ -330,7 +330,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const cph = Math.round((correctChars / timeTaken) * 60);
         const cphBar = document.getElementById('cph-bar');
         const cphValue = document.getElementById('cph-value');
-        const targetCPH = document.getElementById('target-cph');
+        const targetCPH = parseInt(document.getElementById('target-cph').value || 0);
         // Update display
         cphBar.style.width = `${Math.min(100, cph / targetCPH * 100)}%`;
         cphValue.textContent = `${cph.toLocaleString()} CPH`;
