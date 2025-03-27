@@ -303,6 +303,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const accuracy = totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 0;
         const words = userText.trim().split(/\s+/).length;
         const wpm = timeTaken > 0 ? Math.round(words / timeTaken) : 0;
+        const cph = Math.round((correctChars / timeTaken) * 60);
 
         // Save test results to history
         const testResult = {
@@ -310,7 +311,8 @@ document.addEventListener('DOMContentLoaded', function() {
             wpm,
             accuracy,
             correctChars,
-            incorrectChars
+            incorrectChars,
+            cph,
         };
         
         testHistory.unshift(testResult);
@@ -326,8 +328,8 @@ document.addEventListener('DOMContentLoaded', function() {
         correctCharsDisplay.textContent = correctChars;
         incorrectCharsDisplay.textContent = incorrectChars;
         markedTextDiv.innerHTML = markedText;
-        // Calculate Characters Per Hour (CPH)
-        const cph = Math.round((correctChars / timeTaken) * 60);
+
+        
         const cphBar = document.getElementById('cph-bar');
         const cphValue = document.getElementById('cph-value');
         const targetCPH = parseInt(document.getElementById('target-cph').value || 0);
@@ -364,6 +366,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const labels = last20Tests.map((test, index) => `Test ${index + 1}`);
         const wpmData = last20Tests.map(test => test.wpm);
         const accuracyData = last20Tests.map(test => test.accuracy);
+        const cphData = last20Tests.map(test => test.cph);
         
         performanceChart = new Chart(performanceChartCtx, {
             type: 'line',
@@ -385,6 +388,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         backgroundColor: 'rgba(76, 201, 240, 0.1)',
                         tension: 0.3,
                         fill: true
+                    },
+                    {
+                        label: 'CPH',
+                        data: cphData,
+                        borderColor: '#f72585',
+                        backgroundColor: 'rgba(247, 37, 133, 0.1)',
+                        tension: 0.3,
+                        fill: false,
+                        yAxisID: 'y1' // Right axis
                     }
                 ]
             },
@@ -398,6 +410,20 @@ document.addEventListener('DOMContentLoaded', function() {
                         title: {
                             display: true,
                             text: 'WPM / Accuracy'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'CPH'
+                        },
+                        min: 5000,
+                        max: Math.max([8000, ...cphData]) +1000,
+                        grid: {
+                            drawOnChartArea: false // Only show grid for left axis
                         }
                     },
                     x: {
@@ -416,6 +442,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 return [
                                     `Correct: ${test.correctChars}`,
                                     `Incorrect: ${test.incorrectChars}`,
+                                    `Duration: ${test.timeTaken?.toFixed(1) || '?'} mins`,
                                     `Date: ${new Date(test.date).toLocaleString()}`
                                 ];
                             }
