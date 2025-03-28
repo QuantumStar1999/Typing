@@ -163,9 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
         allTexts.splice(selectedIndex, 1);
         savedTexts.splice(selectedIndex-sampleTexts.length, 1);
         localStorage.setItem('savedTexts', JSON.stringify(savedTexts));
-        for (let i = 0; i < allTexts.length; i++) {
-            allTexts[i].title = `${i + 1}. ${allTexts[i].title}`;
-        }
+        location.reload();
         loadSavedTexts();
         customTextArea.value = '';
         updateTextSummary();
